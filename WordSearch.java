@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class WordSearch {
 
     private static char[][] unsolvedBoard;
@@ -6,11 +8,28 @@ public class WordSearch {
 
     public static void main(String[] args) {
         intro();
-        unsolvedBoard = new char[][] {{'a','b','c'},{'d','e','f'},{'g','h','i'}};
-        display(unsolvedBoard);
-        for(int i = 0; i < 20; i++){
-            System.out.print(getRandomChar());
+        Scanner console = new Scanner(System.in);
+        boolean playing = true;
+
+        while(playing) {
+            if(console.hasNext()){
+                String input = console.next();
+
+                switch(input) {
+                    case "g":
+                        break;
+                    case "p":
+                        break;
+                    case "s":
+                        break;
+                    case "q":
+                        playing = false;
+                        break;
+                }
+            }
         }
+        System.out.println("Thanks for playing!");
+        console.close();
     }
 
     // displays a 2d char array, either the solved or unsolved boards
