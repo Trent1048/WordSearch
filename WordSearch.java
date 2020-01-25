@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class WordSearch {
@@ -78,9 +77,48 @@ public class WordSearch {
         }
     }
 
+    private enum Direction {
+        HORIZONTAL,
+        VERTICAL,
+        DIAGONAL
+    }
+
     // add a word to the solved board
     private static void addWord(String word) {
+        // set up randomly if it is backwards and its orientation
+        Direction[] directions = {Direction.HORIZONTAL, Direction.VERTICAL, Direction.DIAGONAL};
+        Direction dir = directions[(int)(Math.random() * 3)];
+        boolean backwards = Math.random() < 0.5;
 
+        // reverses the word if backwards
+        if(backwards) {
+            String reversedWord = "";
+            for(int letter = word.length() - 1; letter >= 0; letter--) {
+                reversedWord += word.charAt(letter);
+            }
+            word = reversedWord;
+        }
+
+        // sets a word horizontally or vertically
+        int letter = 0;
+        if(dir != Direction.DIAGONAL) {
+            int startPos = (int)(Math.random() * (boardSize - word.length()));
+            if(dir == Direction.HORIZONTAL) {
+                int col = (int)(Math.random() * boardSize);
+                for (int row = startPos; row < (startPos + word.length()); row++) {
+                    solvedBoard[row][col] = word.charAt(letter);
+                    letter++;
+                }
+            } else { // vertical
+                int row = (int)(Math.random() * boardSize);
+                for (int col = startPos; col < (startPos + word.length()); col++) {
+                    solvedBoard[row][col] = word.charAt(letter);
+                    letter++;
+                }
+            }
+        } else { // sets a diagonal word
+
+        }
     }
 
     // displays a 2d char array, either the solved or unsolved boards
