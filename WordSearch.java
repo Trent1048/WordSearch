@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class WordSearch {
@@ -10,7 +11,7 @@ public class WordSearch {
 
     // tells the user their options
     private static void options() {
-        System.out.println("Please select an option:\n" +
+        System.out.println("\nPlease select an option:\n" +
                 "\tGenerate a new board (g)\n" +
                 "\tPrint out the word search (p)\n" +
                 "\tDisplay the solution (s)\n" +
@@ -47,6 +48,7 @@ public class WordSearch {
         // make the board a square with the sides equal to the longest word's length
         boardSize = longestWordLen;
         solvedBoard = new char[boardSize][boardSize];
+        unsolvedBoard = new char[boardSize][boardSize];
 
         // fill solved board with placeholder letters
         for (int row = 0; row < boardSize; row++) {
@@ -59,8 +61,12 @@ public class WordSearch {
             addWord(word);
         }
 
-        // clone so the boards aren't references
-         unsolvedBoard = solvedBoard.clone();
+        // copy the solved board to the unsolved one so they aren't references
+        for (int row = 0; row < boardSize; row++) {
+            for (int col = 0; col < boardSize; col++) {
+                unsolvedBoard[row][col] = solvedBoard[row][col];
+            }
+        }
 
         // replace the placeholder letters with normal ones for unsolved board
         for (int row = 0; row < boardSize; row++) {
@@ -81,7 +87,7 @@ public class WordSearch {
     private static void display(char[][] wordSearch) {
         for (int row = 0; row < wordSearch.length; row++) {
             for (int col = 0; col < wordSearch[0].length; col++) {
-                System.out.print(wordSearch[row][col] + "   ");
+                System.out.print(wordSearch[row][col] + "  ");
             }
             System.out.println();
         }
@@ -93,7 +99,7 @@ public class WordSearch {
     }
 
     public static void main(String[] args) {
-        System.out.println("\nWelcome to my word search program!\n" +
+        System.out.print("\nWelcome to my word search program!\n" +
                 "It will allow you to generate a word search");
         options();
         console = new Scanner(System.in);
@@ -102,19 +108,24 @@ public class WordSearch {
         while(playing) {
             String input = console.next();
 
-            switch(input) {
-                case "g":
-                    wordInput();
-                    generate();
-                    break;
-                case "p":
-
-                    break;
-                case "s":
-                    break;
-                case "q":
-                    playing = false;
-                    break;
+            try {
+                switch (input) {
+                    case "g":
+                        wordInput();
+                        generate();
+                        break;
+                    case "p":
+                        display(unsolvedBoard);
+                        break;
+                    case "s":
+                        display(solvedBoard);
+                        break;
+                    case "q":
+                        playing = false;
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("INVALID INPUT");
             }
             options();
         }
