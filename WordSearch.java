@@ -105,19 +105,21 @@ public class WordSearch {
             int startPos = (int)(Math.random() * (boardSize - word.length()));
             if(dir == Direction.HORIZONTAL) {
                 int col = (int)(Math.random() * boardSize);
-                for (int row = startPos; row < (startPos + word.length()); row++) {
+                for (int row = startPos; row < (startPos + word.length()); row++, letter++) {
                     solvedBoard[row][col] = word.charAt(letter);
-                    letter++;
                 }
             } else { // vertical
                 int row = (int)(Math.random() * boardSize);
-                for (int col = startPos; col < (startPos + word.length()); col++) {
+                for (int col = startPos; col < (startPos + word.length()); col++, letter++) {
                     solvedBoard[row][col] = word.charAt(letter);
-                    letter++;
                 }
             }
         } else { // sets a diagonal word
-
+            int row = (int)(Math.random() * (boardSize - word.length()));
+            int col = (int)(Math.random() * (boardSize - word.length()));
+            for(letter = 0; letter < word.length(); letter++, row++, col++) {
+                solvedBoard[row][col] = word.charAt(letter);
+            }
         }
     }
 
