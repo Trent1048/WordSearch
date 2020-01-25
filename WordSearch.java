@@ -3,6 +3,7 @@ import java.util.Scanner;
 public class WordSearch {
 
     private static Scanner console;
+    private static int boardSize; // the length of the sides of the board
     private static char[][] unsolvedBoard;
     private static char[][] solvedBoard;
     private static String[] words; // array of all words in the word search
@@ -44,8 +45,36 @@ public class WordSearch {
         }
 
         // make the board a square with the sides equal to the longest word's length
-        unsolvedBoard = new char[longestWordLen][longestWordLen];
-        solvedBoard = unsolvedBoard.clone(); // clone so they aren't references
+        boardSize = longestWordLen;
+        solvedBoard = new char[boardSize][boardSize];
+
+        // fill solved board with placeholder letters
+        for (int row = 0; row < boardSize; row++) {
+            for (int col = 0; col < boardSize; col++) {
+                solvedBoard[row][col] = '_';
+            }
+        }
+
+        for(String word : words) {
+            addWord(word);
+        }
+
+        // clone so the boards aren't references
+         unsolvedBoard = solvedBoard.clone();
+
+        // replace the placeholder letters with normal ones for unsolved board
+        for (int row = 0; row < boardSize; row++) {
+            for (int col = 0; col < boardSize; col++) {
+                if(unsolvedBoard[row][col] == '_'){
+                    unsolvedBoard[row][col] = getRandomChar();
+                }
+            }
+        }
+    }
+
+    // add a word to the solved board
+    private static void addWord(String word) {
+
     }
 
     // displays a 2d char array, either the solved or unsolved boards
