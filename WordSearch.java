@@ -5,13 +5,11 @@ public class WordSearch {
     private static Scanner console;
     private static char[][] unsolvedBoard;
     private static char[][] solvedBoard;
-    private static String words = ""; // words in the word search split up by spaces
+    private static String[] words; // array of all words in the word search
 
-    // introduces the program
-    private static void intro() {
-        System.out.println("\nWelcome to my word search program!\n" +
-                "It will allow you to generate a word search\n" +
-                "Please select an option:\n" +
+    // tells the user their options
+    private static void options() {
+        System.out.println("Please select an option:\n" +
                 "\tGenerate a new board (g)\n" +
                 "\tPrint out the word search (p)\n" +
                 "\tDisplay the solution (s)\n" +
@@ -23,12 +21,31 @@ public class WordSearch {
         System.out.print("You will input words to add to the word search\n" +
                 "How many do you want to input? ");
         int totalWords = console.nextInt();
+        words = new String[totalWords];
 
         for(int wordNum = 0; wordNum < totalWords; wordNum++) {
             System.out.print("Please input a word: ");
             String word = console.next();
-            words += word.toUpperCase() + " ";
+            words[wordNum] = word.toUpperCase();
         }
+    }
+
+    // generates the solved and unsolved boards
+    private static void generate() {
+
+        // find the longest word
+        int longestWordLen = 0;
+
+        for(String word : words) {
+            int wordLen = word.length();
+            if(wordLen > longestWordLen) {
+                longestWordLen = wordLen;
+            }
+        }
+
+        // make the board a square with the sides equal to the longest word's length
+        unsolvedBoard = new char[longestWordLen][longestWordLen];
+        solvedBoard = unsolvedBoard.clone(); // clone so they aren't references
     }
 
     // displays a 2d char array, either the solved or unsolved boards
@@ -47,7 +64,9 @@ public class WordSearch {
     }
 
     public static void main(String[] args) {
-        intro();
+        System.out.println("\nWelcome to my word search program!\n" +
+                "It will allow you to generate a word search");
+        options();
         console = new Scanner(System.in);
         boolean playing = true;
 
@@ -57,9 +76,10 @@ public class WordSearch {
             switch(input) {
                 case "g":
                     wordInput();
-                    System.out.println(words);
+                    generate();
                     break;
                 case "p":
+
                     break;
                 case "s":
                     break;
@@ -67,6 +87,7 @@ public class WordSearch {
                     playing = false;
                     break;
             }
+            options();
         }
         System.out.println("Thanks for playing!");
         console.close();
