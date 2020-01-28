@@ -11,7 +11,8 @@ public class WordSearch {
     private enum Direction {
         HORIZONTAL,
         VERTICAL,
-        DIAGONAL
+        DIAGONAL_RIGHT,
+        DIAGONAL_LEFT
     }
 
     private interface QuadFunction<A, B, C, D, R> {
@@ -54,8 +55,8 @@ public class WordSearch {
             }
         }
 
-        // make the board a square with the sides equal to the longest word's length
-        boardSize = longestWordLen;
+        // make the board a square with the sides a little more than the longest word
+        boardSize = longestWordLen + 3;
         solvedBoard = new char[boardSize][boardSize];
         unsolvedBoard = new char[boardSize][boardSize];
 
@@ -70,7 +71,7 @@ public class WordSearch {
             // loops through a hundred times to try and place a word on the board
             for(int i = 0; i < 100; i++) {
                 // set up randomly if it is backwards and its orientation
-                Direction dir = Direction.values()[(int) (Math.random() * 3)];
+                Direction dir = Direction.values()[(int) (Math.random() * 4)];
                 boolean backwards = Math.random() < 0.5;
 
                 // reverses the word if backwards
@@ -154,14 +155,24 @@ public class WordSearch {
                 if(!func.apply(row, col, word, letter)) {
                     result = false;
                 }            }
-        } else { // goes through diagonally
+        } else if(dir == Direction.DIAGONAL_RIGHT) { // goes through diagonally to the right
             int row = (int)(random1 * (boardSize - word.length()));
             int col = (int)(random2 * (boardSize - word.length()));
             for(letter = 0; letter < word.length(); letter++, row++, col++) {
-                // both row and column change so it goes diagonally to the right
+                // both row and column change positively so it goes diagonally to the right
                 if(!func.apply(row, col, word, letter)) {
                     result = false;
-                }            }
+                }
+            }
+        } else { // goes diagonally to the left
+            int row = (int)(word.length() + random1 * (boardSize - word.length()));
+            int col = (int)(random2 * (boardSize - word.length()));
+            for(letter = 0; letter < word.length(); letter++, row--, col++) {
+                // column goes up but row goes down so it goes diagonally to the left
+                if(!func.apply(row, col, word, letter)) {
+                    result = false;
+                }
+            }
         }
         return result;
     }
