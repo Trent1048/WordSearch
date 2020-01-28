@@ -8,6 +8,16 @@ public class WordSearch {
     private static char[][] solvedBoard;
     private static String[] words; // array of all words in the word search
 
+    private enum Direction {
+        HORIZONTAL,
+        VERTICAL,
+        DIAGONAL
+    }
+
+    private interface QuadFunction<A, B, C, D, R> {
+        R apply(A a, B b, C c, D d);
+    }
+
     // tells the user their options
     private static void options() {
         System.out.println("\nPlease select an option:\n" +
@@ -57,7 +67,21 @@ public class WordSearch {
         }
 
         for(String word : words) {
-            addWord(word);
+            // set up randomly if it is backwards and its orientation
+            Direction dir = Direction.values()[(int)(Math.random() * 3)];
+            boolean backwards = Math.random() < 0.5;
+
+            // reverses the word if backwards
+            if(backwards) {
+                String reversedWord = "";
+                for(int letter = word.length() - 1; letter >= 0; letter--) {
+                    reversedWord += word.charAt(letter);
+                }
+                word = reversedWord;
+            }
+
+            // goes through the loop of directions and adds the word to the solved board
+            mainBoardLoop(addLetter, word, dir, Math.random(), Math.random());
         }
 
         // copy the solved board to the unsolved one so they aren't references
@@ -77,48 +101,44 @@ public class WordSearch {
         }
     }
 
-    private enum Direction {
-        HORIZONTAL,
-        VERTICAL,
-        DIAGONAL
-    }
+    // lambda function to add a letter to the solved board in a given location
+    private static QuadFunction<Integer, Integer, String, Integer, Boolean> addLetter = (row, col, word, letter) -> {
+        solvedBoard[row][col] = word.charAt(letter);
+        return false;
+    };
 
-    // add a word to the solved board
-    private static void addWord(String word) {
-        // set up randomly if it is backwards and its orientation
-        Direction[] directions = {Direction.HORIZONTAL, Direction.VERTICAL, Direction.DIAGONAL};
-        Direction dir = directions[(int)(Math.random() * 3)];
-        boolean backwards = Math.random() < 0.5;
+    // goes through the possible directions, loops through the array locations, and applies a function
+    private static void mainBoardLoop(QuadFunction<Integer, Integer, String, Integer, Boolean> func,
+                                        String word, Direction dir, double random1, double random2) {
+        /*
+        func: the function that will be run in ever iteration of a possible word's location
+        word: the word being compared or inputted or used for whatever
+        dir: the direction the word goes
+        random1, random2: would be an inputted Math.random() so it will run the same every time
+            and not recalculate the randomness
+         */
 
-        // reverses the word if backwards
-        if(backwards) {
-            String reversedWord = "";
-            for(int letter = word.length() - 1; letter >= 0; letter--) {
-                reversedWord += word.charAt(letter);
-            }
-            word = reversedWord;
-        }
-
-        // sets a word horizontally or vertically
         int letter = 0;
-        if(dir != Direction.DIAGONAL) {
-            int startPos = (int)(Math.random() * (boardSize - word.length()));
-            if(dir == Direction.HORIZONTAL) {
-                int col = (int)(Math.random() * boardSize);
-                for (int row = startPos; row < (startPos + word.length()); row++, letter++) {
-                    solvedBoard[row][col] = word.charAt(letter);
-                }
-            } else { // vertical
-                int row = (int)(Math.random() * boardSize);
-                for (int col = startPos; col < (startPos + word.length()); col++, letter++) {
-                    solvedBoard[row][col] = word.charAt(letter);
-                }
+        int startPos = (int)(random1 * (boardSize - word.length()));
+
+        if(dir == Direction.VERTICAL) { // sets a word vertically
+            int col = (int)(random2 * boardSize);
+            for (int row = startPos; row < (startPos + word.length()); row++, letter++) {
+                // the column stays the same but row changes, making the word vertical
+                func.apply(row, col, word, letter);
             }
-        } else { // sets a diagonal word
-            int row = (int)(Math.random() * (boardSize - word.length()));
-            int col = (int)(Math.random() * (boardSize - word.length()));
+        } else if(dir == Direction.HORIZONTAL) { // sets a word horizontally
+            int row = (int)(random2 * boardSize);
+            for (int col = startPos; col < (startPos + word.length()); col++, letter++) {
+                // the row stays the same but the column changes, making the word horizontal
+                func.apply(row, col, word, letter);
+            }
+        } else { // sets a word diagonally
+            int row = (int)(random1 * (boardSize - word.length()));
+            int col = (int)(random2 * (boardSize - word.length()));
             for(letter = 0; letter < word.length(); letter++, row++, col++) {
-                solvedBoard[row][col] = word.charAt(letter);
+                // both row and column change so it goes diagonally to the right
+                func.apply(row, col, word, letter);
             }
         }
     }
